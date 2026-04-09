@@ -79,7 +79,7 @@ CRITICAL:
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://mottainai.sreekeshokky.in',
       'X-Title': 'Mottainai',
     },
     body: JSON.stringify({
