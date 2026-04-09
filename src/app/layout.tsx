@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://mottainai.sreekeshokky.in";
@@ -97,7 +98,10 @@ export default function RootLayout({
         {/* Theme colour for browser chrome (matches app dark bg) */}
         <meta name="theme-color" content="#0d1117" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
