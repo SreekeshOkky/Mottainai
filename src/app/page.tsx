@@ -120,6 +120,20 @@ export default function Home() {
           onComplete={handleItemUpdate} 
         />
       )}
+
+      <footer className={styles.footer}>
+        <p>
+          &copy; {new Date().getFullYear()}{" "}
+          <a
+            href="https://sreekeshokky.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.footerLink}
+          >
+            Sreekesh Okky
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
