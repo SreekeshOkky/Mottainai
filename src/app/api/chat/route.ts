@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   // Default to Indian Rupee when not provided
   const currency = currencyCode || 'INR';
-  const symbol   = currencySymbol || '₹';
+  const symbol = currencySymbol || '₹';
   const userRegion = region || 'India';
 
   const systemPrompt = `You are a sharp, honest friend who helps people decide if they really need to buy something. You know the real-world market well — prices, alternatives, and the honest truth about when something isn't worth buying.
@@ -45,7 +45,7 @@ CONVERSATION FLOW:
 4. FINAL VERDICT (when you're confident — no sooner than turn 4, no later than turn 10): Give a clear verdict — [SPEND], [SAVE], or [REPAIR/UPGRADE]. 1–2 plain sentences. Be direct and mention the key reason from their answers.
 
    At the very END of your verdict message — after the verdict text — add this block exactly:
-   <<<DECISION>>>
+<<<DECISION>>>
    {"decision":"buy","reason":"One plain sentence reason."}
    <<<END>>>
 
@@ -63,15 +63,15 @@ CRITICAL:
     { role: 'system', content: systemPrompt },
     ...(isOpening
       ? [
-          {
-            role: 'user',
-            content: `[START] Open the conversation about "${itemName || 'this item'}". Give one surprising or useful real-world insight about it, then ask your first focused question.`,
-          },
-        ]
+        {
+          role: 'user',
+          content: `[START] Open the conversation about "${itemName || 'this item'}". Give one surprising or useful real-world insight about it, then ask your first focused question.`,
+        },
+      ]
       : messages.map((m: { role: string; content: string }) => ({
-          role: m.role,
-          content: m.content,
-        }))),
+        role: m.role,
+        content: m.content,
+      }))),
   ];
 
   const response = await fetch(OPENROUTER_API_URL, {
@@ -83,7 +83,7 @@ CRITICAL:
       'X-Title': 'Mottainai',
     },
     body: JSON.stringify({
-      model: 'nvidia/nemotron-3-super-120b-a12b:free',
+      model: 'openai/gpt-oss-120b',
       messages: apiMessages,
       temperature: 0.7,
       max_tokens: 512,
