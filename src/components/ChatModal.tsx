@@ -31,14 +31,26 @@ export default function ChatModal({ item, currency, onClose, onComplete }: ChatM
   const [isLoading, setIsLoading] = useState(false);
   const [decision, setDecision] = useState<Decision | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Always holds the latest messages — prevents stale-closure bugs in sendMessage
+  const messagesRef = useRef<Message[]>([]);
+  // Guards against double-fire in React Strict Mode (dev) or accidental re-mounts
+  const hasOpenedRef = useRef(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Fire opening message from AI on mount
+  // Fire opening message from AI on mount (exactly once)
   useEffect(() => {
+    if (hasOpenedRef.current) return;
+    hasOpenedRef.current = true;
+
     const openChat = async () => {
       setIsLoading(true);
       try {
@@ -55,14 +67,18 @@ export default function ChatModal({ item, currency, onClose, onComplete }: ChatM
         });
         if (!res.ok) throw new Error(`API error ${res.status}`);
         const data = await res.json();
-        setMessages([
-          { id: 'opening', role: 'assistant', content: data.content },
-        ]);
+        const openingMsg: Message = { id: 'opening', role: 'assistant', content: data.content };
+        messagesRef.current = [openingMsg];
+        setMessages([openingMsg]);
       } catch (err) {
         console.error(err);
-        setMessages([
-          { id: 'opening', role: 'assistant', content: `Hey! So you're thinking about "${item.name}" — let's see if it's really worth it. What's the main reason you want it?` },
-        ]);
+        const fallback: Message = {
+          id: 'opening',
+          role: 'assistant',
+          content: `Hey! So you're thinking about "${item.name}" — let's see if it's really worth it. What's the main reason you want it?`,
+        };
+        messagesRef.current = [fallback];
+        setMessages([fallback]);
       } finally {
         setIsLoading(false);
       }
@@ -78,7 +94,9 @@ export default function ChatModal({ item, currency, onClose, onComplete }: ChatM
       content: userText,
     };
 
-    const nextMessages = [...messages, userMsg];
+    // Read from ref to get latest messages (avoids stale closure)
+    const nextMessages = [...messagesRef.current, userMsg];
+    messagesRef.current = nextMessages;
     setMessages(nextMessages);
     setInput('');
     setIsLoading(true);
@@ -110,6 +128,7 @@ export default function ChatModal({ item, currency, onClose, onComplete }: ChatM
       };
 
       const finalMessages = [...nextMessages, assistantMsg];
+      messagesRef.current = finalMessages;
       setMessages(finalMessages);
 
       if (data.decision) {
