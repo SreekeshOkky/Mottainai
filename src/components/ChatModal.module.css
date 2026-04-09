@@ -33,18 +33,19 @@
   position: relative;
 }
 
-/* On small screens: go full-screen, no rounded edges on sides */
+/* On small screens: centered, 80% height */
 @media (max-width: 600px) {
   .overlay {
-    padding: 0;
-    align-items: flex-end;
+    padding: 1rem;
+    align-items: center;
+    overflow: hidden;
   }
 
   .modal {
-    height: 95vh;
-    max-height: 95vh;
-    border-radius: var(--radius) var(--radius) 0 0;
-    border-bottom: none;
+    height: 80vh;
+    max-height: 80vh;
+    border-radius: var(--radius);
+    border-bottom: 1px solid var(--border-color);
   }
 }
 
